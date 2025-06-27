@@ -1,0 +1,41 @@
+import random
+from collections import defaultdict
+
+def build_markov_chain(text, n=2):
+    words = text.split()
+    chain = defaultdict(list)
+
+    for i in range(len(words) - n):
+        key = tuple(words[i:i + n - 1])
+        next_word = words[i + n - 1]
+        chain[key].append(next_word)
+
+    return chain
+
+def generate_text(chain, length=20, seed=None):
+    if seed is None:
+        seed = random.choice(list(chain.keys()))
+
+    output = list(seed)
+
+    for _ in range(length):
+        current_state = tuple(output[-(len(seed)):])
+        next_words = chain.get(current_state)
+        if not next_words:
+            break
+        next_word = random.choice(next_words)
+        output.append(next_word)
+
+    return ' '.join(output)
+
+# Example corpus
+text = """
+To be, or not to be, that is the question. Wheather 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune
+"""
+
+# Build the chain and generate text
+chain = build_markov_chain(text, n=2)
+generated_text = generate_text(chain, length=20)
+
+print("🔮 Generated Text:")
+print(generated_text)
